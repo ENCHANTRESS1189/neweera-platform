@@ -3,8 +3,6 @@ name: Deploy NEWEeRAS Platform
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
 
 jobs:
   build-and-deploy:
@@ -12,34 +10,55 @@ jobs:
     
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Setup Node.js
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version: '18'
         cache: 'npm'
 
     - name: Install dependencies
-      run: npm ci
+      run: npm install
 
     - name: Build application
       run: npm run build
       env:
-        NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
-        NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${{ secrets.STRIPE_PUBLISHABLE_KEY }}
-        NEXT_PUBLIC_SITE_URL: https://daniellebeaudry.github.io/neweeras-platform
-
-    - name: Export static files
-      run: npm run export
+        NODE_ENV: production
 
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
-      if: github.ref == 'refs/heads/main'
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./out
+Click "Commit changes"
+Step 3: Delete the simple index.html
+Click on index.html
+Click trash icon (delete)
+Click "Commit changes"
+Now your FULL React platform will build properly! Check Actions tab in 5-10 minutes for green checkmarks. 🚀
+
+You'll get your premium, one-of-a-kind platform exactly as designed!
+
+
+
+take away your suggestions i cant copy the code its in my way
+
+Office Agent
+Office Agent
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  output: 'export',
+  trailingSlash: true,
+  images: {
+    unoptimized: true
+  },
+  distDir: 'out',
+  assetPrefix: process.env.NODE_ENV === 'production' ? '/neweeras-platform' : '',
+  basePath: process.env.NODE_ENV === 'production' ? '/neweeras-platform' : '',
+}
+
+module.exports = nextConfig
 
 
 
