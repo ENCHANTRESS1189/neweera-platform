@@ -1,0 +1,716 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEWEeRAS - AI Assistant Marketplace</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .hero-section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: white;
+            padding: 20px;
+            position: relative;
+        }
+        
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs><radialGradient id="a" cx="50%" cy="50%"><stop offset="0%" stop-color="%23ffffff" stop-opacity="0.1"/><stop offset="100%" stop-color="%23ffffff" stop-opacity="0"/></radialGradient></defs><circle cx="200" cy="200" r="100" fill="url(%23a)"/><circle cx="800" cy="300" r="150" fill="url(%23a)"/><circle cx="400" cy="700" r="120" fill="url(%23a)"/></svg>') no-repeat center center;
+            background-size: cover;
+            opacity: 0.3;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+        }
+        
+        .logo {
+            font-size: 5rem;
+            font-weight: 900;
+            margin-bottom: 20px;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+            background: linear-gradient(45deg, #ffffff, #e0e7ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .tagline {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            opacity: 0.95;
+        }
+        
+        .subtitle {
+            font-size: 1.3rem;
+            margin-bottom: 40px;
+            opacity: 0.8;
+        }
+        
+        .cta-button {
+            background: linear-gradient(45deg, #2563eb, #3b82f6);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.3);
+            margin: 10px;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(37, 99, 235, 0.4);
+        }
+        
+        .platform-section {
+            background: white;
+            padding: 80px 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 3rem;
+            color: #1f2937;
+            margin-bottom: 20px;
+        }
+        
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.3rem;
+            color: #6b7280;
+            margin-bottom: 60px;
+        }
+        
+        .auth-card {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            margin-bottom: 60px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .auth-form input {
+            padding: 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .auth-form input:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+        
+        .auth-buttons {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .btn-signin {
+            flex: 1;
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-signup {
+            flex: 1;
+            background: #059669;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-signout {
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        
+        .user-welcome {
+            text-align: center;
+            background: linear-gradient(45deg, #2563eb, #3b82f6);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 40px;
+        }
+        
+        .ai-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .ai-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            border: 1px solid #f3f4f6;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .ai-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(45deg, #2563eb, #3b82f6);
+        }
+        
+        .ai-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 60px rgba(0,0,0,0.15);
+        }
+        
+        .ai-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #2563eb, #3b82f6);
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .ai-name {
+            font-size: 1.8rem;
+            color: #1f2937;
+            margin-bottom: 8px;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        .ai-role {
+            color: #6b7280;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: 500;
+        }
+        
+        .ai-description {
+            color: #374151;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        
+        .ai-features {
+            list-style: none;
+            margin-bottom: 25px;
+        }
+        
+        .ai-features li {
+            color: #059669;
+            margin-bottom: 8px;
+            position: relative;
+            padding-left: 20px;
+        }
+        
+        .ai-features li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #059669;
+            font-weight: bold;
+        }
+        
+        .ai-price {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: #059669;
+            margin: 25px 0;
+            text-align: center;
+        }
+        
+        .subscribe-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(45deg, #2563eb, #3b82f6);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .subscribe-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
+        }
+        
+        .stats-section {
+            background: linear-gradient(135deg, #1f2937, #374151);
+            color: white;
+            padding: 80px 20px;
+            text-align: center;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .stat-item {
+            padding: 20px;
+        }
+        
+        .stat-number {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #3b82f6;
+            margin-bottom: 10px;
+        }
+        
+        .stat-label {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .footer {
+            background: #1f2937;
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        
+        .hidden { display: none; }
+        
+        @media (max-width: 768px) {
+            .logo { font-size: 3rem; }
+            .tagline { font-size: 1.4rem; }
+            .subtitle { font-size: 1.1rem; }
+            .ai-grid { grid-template-columns: 1fr; }
+            .auth-buttons { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-content">
+            <h1 class="logo">NEWEeRAS</h1>
+            <p class="tagline">Design & Technology</p>
+            <p class="subtitle">The World's Most Advanced AI Assistant Marketplace</p>
+            <button class="cta-button" onclick="scrollToSection()">Explore AI Assistants</button>
+            <button class="cta-button" onclick="scrollToAuth()">Get Started</button>
+        </div>
+    </section>
+
+    <!-- Platform Section -->
+    <section class="platform-section" id="platform">
+        <div class="container">
+            <h2 class="section-title">Your AI Dream Team</h2>
+            <p class="section-subtitle">10 Specialized AI Assistants Ready to Transform Your Life</p>
+
+            <!-- Authentication -->
+            <div id="authSection" class="auth-card">
+                <h3 style="text-align: center; margin-bottom: 20px; color: #1f2937;">Join NEWEeRAS Today</h3>
+                <div class="auth-form">
+                    <input type="email" id="email" placeholder="Enter your email address">
+                    <input type="password" id="password" placeholder="Create a secure password">
+                    <div class="auth-buttons">
+                        <button class="btn-signin" onclick="signIn()">Sign In</button>
+                        <button class="btn-signup" onclick="signUp()">Sign Up</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Section -->
+            <div id="userSection" class="hidden">
+                <div class="user-welcome">
+                    <h3>Welcome to NEWEeRAS!</h3>
+                    <p id="userEmail"></p>
+                    <button class="btn-signout" onclick="signOut()">Sign Out</button>
+                </div>
+            </div>
+
+            <!-- AI Assistants Grid -->
+            <div class="ai-grid">
+                <div class="ai-card">
+                    <div class="ai-avatar">A</div>
+                    <div class="ai-name">Amber</div>
+                    <div class="ai-role">Virtual Receptionist</div>
+                    <div class="ai-description">Your professional AI hostess who welcomes users and guides them to the perfect AI assistant for their needs.</div>
+                    <ul class="ai-features">
+                        <li>24/7 Customer Support</li>
+                        <li>Intelligent Routing</li>
+                        <li>Professional Communication</li>
+                        <li>Multi-language Support</li>
+                    </ul>
+                    <div class="ai-price">$29.99/month</div>
+                    <button class="subscribe-btn" onclick="subscribe('Amber', 29.99)">Subscribe Now</button>
+                </div>
+
+                <div class="ai-card">
+                    <div class="ai-avatar">E</div>
+                    <div class="ai-name">Emily</div>
+                    <div class="ai-role">Math Tutor</div>
+                    <div class="ai-description">Patient and encouraging mathematics specialist helping students from elementary through college level.</div>
+                    <ul class="ai-features">
+                        <li>Step-by-step Solutions</li>
+                        <li>Visual Learning Tools</li>
+                        <li>Progress Tracking</li>
+                        <li>Homework Help</li>
+                    </ul>
+                    <div class="ai-price">$39.99/month</div>
+                    <button class="subscribe-btn" onclick="subscribe('Emily', 39.99)">Subscribe Now</button>
+                </div>
+
+                <div class="ai-card">
+                    <div class="ai-avatar">M</div>
+                    <div class="ai-name">Monica</div>
+                    <div class="ai-role">Reading Tutor</div>
+                    <div class="ai-description">Creative reading and literature specialist who improves comprehension and writing skills.</div>
+                    <ul class="ai-features">
+                        <li>Reading Comprehension</li>
+                        <li>Writing Enhancement</li>
+                        <li>Literature Analysis</li>
+                        <li>Vocabulary Building</li>
+                    </ul>
+                    <div class="ai-price">$39.99/month</div>
+                    <button class="subscribe-btn" onclick="subscribe('Monica', 39.99)">Subscribe Now</button>
+                </div>
+
+                <div class="ai-card">
+                    <div class="ai-avatar">S</div>
+                    <div class="ai-name">Stacie</div>
+                    <div class="ai-role">Science Expert</div>
+                    <div class="ai-description">Multi-disciplinary specialist covering biology, chemistry, physics, history, and research methods.</div>
+                    <ul class="ai-features">
+                        <li>Science & Social Studies</li>
+                        <li>Research Guidance</li>
+                        <li>Lab Report Help</li>
+                        <li>Exam Preparation</li>
+                    </ul>
+                    <div class="ai-price">$49.99/month</div>
+                    <button class="subscribe-btn" onclick="subscribe('Stacie', 49.99)">Subscribe Now</button>
+                </div>
+
+                <div class="ai-card">
+                    <div class="ai-avatar">E</div>
+                    <div class="ai-name">Ethan</div>
+                    <div class="ai-role">The Professor</div>
+                    <div class="ai-description">Scholarly expert providing graduate-level support and comprehensive education across disciplines.</div>
+                    <ul class="ai-features">
+                        <li>Graduate-level Support</li>
+                        <li>Research Methodology</li>
+                        <li>Thesis Guidance</li>
+                        <li>Academic Writing</li>
+                    </ul>
+                    <div class="ai-price">$59.99/month</div>
+                    <button class="subscribe-btn" onclick="subscribe('Ethan', 59.99)">Subscribe Now</button>
+                </div>
+
+                <div class="ai-card">
+                    <div class="ai-avatar">A</div>
+                    <div class="ai-name">Amy</div>
+                    <div class="ai-role">Personal Companion</div>
+                    <div class="ai-description">Empathetic companion providing emotional support, life guidance, and genuine conversation.</div>
+                    <ul class="ai-features">
+                        <li>Emotional Support</li>
+                        <li>Life Coaching</li>
+                        <li>Stress Management</li>
+                        <li>Daily Motivation</li>
+                    </ul>
+                    <div class="ai-price">$34.99/month</div>
+                    <button class="subscribe-btn" onclick="subscribe('Amy', 34.99)">Subscribe Now</button>
+                </div>
+
+                <div class="ai-card">
+                    <div class="ai-avatar">E</div>
+                    <div class="ai-name">Elaina</div>
+                    <div class="ai-role">Marketing Pro</div>
+                    <div class="ai-description">Strategic marketing professional specializing in digital campaigns and business growth.</div>
+                    <ul class="ai-features">
+                        <li>Digital Marketing Strategy</li>
+                        <li>Social Media Management</li>
+                        <li>Brand Development</li>
+                        <li>Campaign Analytics</li>
+                    </ul>
+                    <div class="ai-price">$54.99/month</div>
+                    <button class="subscribe-btn" onclick="subscribe('Elaina', 54.99)">Subscribe Now</button>
+                </div>
+
+                <div class="ai-card">
+                    <div class="ai-avatar">T</div>
+                    <div class="ai-name">Tabbatha</div>
+                    <div class="ai-role">Finance Expert</div>
+                    <div class="ai-description">Organized financial specialist helping with budgeting, debt management, and investment strategies.</div>
+                    <ul class="ai-features">
+                        <li>Personal Budgeting</li>
+                        <li>Investment Guidance</li>
+                        <li>Debt Management</li>
+                        <li>Financial Planning</li>
+                    </ul>
+                    <div class="ai-price">$44.99/month</div>
+                    <button class="subscribe-btn" onclick="subscribe('Tabbatha', 44.99)">Subscribe Now</button>
+                </div>
+
+                <div class="ai-card">
+                    <div class="ai-avatar">H</div>
+                    <div class="ai-name">Hanna</div>
+                    <div class="ai-role">Real Estate Pro</div>
+                    <div class="ai-description">Knowledgeable real estate expert providing guidance on buying, selling, and property investment.</div>
+                    <ul class="ai-features">
+                        <li>Home Buying Guidance</li>
+                        <li>Market Analysis</li>
+                        <li>Investment Properties</li>
+                        <li>Negotiation Support</li>
+                    </ul>
+                    <div class="ai-price">$49.99/month</div>
+                    <button class="subscribe-btn" onclick="subscribe('Hanna', 49.99)">Subscribe Now</button>
+                </div>
+
+                <div class="ai-card">
+                    <div class="ai-avatar">M</div>
+                    <div class="ai-name">Mandy</div>
+                    <div class="ai-role">Email Manager</div>
+                    <div class="ai-description">Efficient communication specialist helping with email organization and productivity systems.</div>
+                    <ul class="ai-features">
+                        <li>Email Organization</li>
+                        <li>Productivity Systems</li>
+                        <li>Workflow Optimization</li>
+                        <li>Communication Training</li>
+                    </ul>
+                    <div class="ai-price">$34.99/month</div>
+                    <button class="subscribe-btn" onclick="subscribe('Mandy', 34.99)">Subscribe Now</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <div class="container">
+            <h2 class="section-title" style="color: white; margin-bottom: 60px;">Platform Statistics</h2>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number">10</div>
+                    <div class="stat-label">AI Specialists</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">24/7</div>
+                    <div class="stat-label">Availability</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">∞</div>
+                    <div class="stat-label">Conversations</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">100%</div>
+                    <div class="stat-label">Satisfaction</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 NEWEeRAS Design & Technology. All rights reserved.</p>
+            <p>Owned by Danielle Beaudry - The Future of AI Assistance</p>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Supabase
+        const supabase = window.supabase.createClient(
+            'https://fdepgoofjwlkewpqnmqx.supabase.co',
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZkZXBnb29mandsS2V3cHFubXF4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg0MzE2NzQsImV4cCI6MjA1NDAwNzY3NH0.IgmDWx4A5_JPv1UvKIaDBA_eUOvig8X'
+        );
+
+        let currentUser = null;
+
+        // Check for existing session
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            if (session) {
+                currentUser = session.user;
+                showUserSection();
+            }
+        });
+
+        // Listen for auth changes
+        supabase.auth.onAuthStateChange((event, session) => {
+            if (session) {
+                currentUser = session.user;
+                showUserSection();
+            } else {
+                currentUser = null;
+                showAuthSection();
+            }
+        });
+
+        async function signUp() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            if (!email || !password) {
+                alert('Please enter email and password');
+                return;
+            }
+
+            if (password.length < 6) {
+                alert('Password must be at least 6 characters');
+                return;
+            }
+
+            const { data, error } = await supabase.auth.signUp({
+                email: email,
+                password: password,
+            });
+
+            if (error) {
+                alert('Error: ' + error.message);
+            } else {
+                alert('Welcome to NEWEeRAS! Check your email for verification.');
+            }
+        }
+
+        async function signIn() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            if (!email || !password) {
+                alert('Please enter email and password');
+                return;
+            }
+
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email: email,
+                password: password,
+            });
+
+            if (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        async function signOut() {
+            const { error } = await supabase.auth.signOut();
+            if (error) {
+                alert('Error signing out: ' + error.message);
+            }
+        }
+
+        function showUserSection() {
+            document.getElementById('authSection').classList.add('hidden');
+            document.getElementById('userSection').classList.remove('hidden');
+            document.getElementById('userEmail').textContent = currentUser.email;
+        }
+
+        function showAuthSection() {
+            document.getElementById('authSection').classList.remove('hidden');
+            document.getElementById('userSection').classList.add('hidden');
+        }
+
+        function subscribe(aiName, price) {
+            if (!currentUser) {
+                alert('Please sign in first to access your AI assistants!');
+                scrollToAuth();
+                return;
+            }
+            
+            alert(`🎉 Welcome to ${aiName}!\n\nYour ${aiName} AI assistant is now being prepared for you.\n\nPrice: $${price}/month\n\nPayment integration coming soon!\n\nYou'll receive an email with access instructions.`);
+        }
+
+        function scrollToSection() {
+            document.getElementById('platform').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function scrollToAuth() {
+            document.getElementById('authSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Add smooth scrolling and animations
+        window.addEventListener('scroll', () => {
+            const cards = document.querySelectorAll('.ai-card');
+            cards.forEach(card => {
+                const rect = card.getBoundingClientRect();
+                if (rect.top < window.innerHeight && rect.bottom > 0) {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }
+            });
+        });
+
+        // Initialize card animations
+        document.addEventListener('DOMContentLoaded', () => {
+            const cards = document.querySelectorAll('.ai-card');
+            cards.forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(30px)';
+                card.style.transition = 'all 0.6s ease';
+            });
+        });
+    </script>
+</body>
+</html>
