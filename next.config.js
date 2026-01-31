@@ -1,12 +1,11 @@
-/** @type {import('next').NextConfig} */
+** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'export',
   trailingSlash: true,
   images: {
     unoptimized: true
   },
-  basePath: '/neweeras-platform',
-  assetPrefix: '/neweeras-platform/',
+  distDir: 'out',
+  assetPrefix: process.env.NODE_ENV === 'production' ? '/neweeras-platform' : '',
+  basePath: process.env.NODE_ENV === 'production' ? '/neweeras-platform' : '',
 }
-
-module.exports = nextConfig
