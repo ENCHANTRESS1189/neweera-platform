@@ -1,0 +1,29 @@
+{
+  "name": "neweeras-platform",
+  "version": "1.0.0",
+  "description": "NEWEeRAS AI Assistant Marketplace",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "export": "next export"
+  },
+  "dependencies": {
+    "next": "^14.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "@supabase/supabase-js": "^2.38.0",
+    "openai": "^4.20.0",
+    "@stripe/stripe-js": "^2.1.0",
+    "stripe": "^14.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.0.0",
+    "typescript": "^5.0.0"
+  }
+}
+
+
+
