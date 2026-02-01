@@ -3,131 +3,196 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEWEeRAS - AI Assistant Marketplace</title>
+    <title>NEWEeRAS - The Future of AI Assistance</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://js.stripe.com/v3/"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #000;
+            color: white;
             overflow-x: hidden;
         }
         
-        .hero-section {
+        /* Futuristic Background Animation */
+        .cosmic-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #0a0a0a, #1a1a2e, #16213e, #0f3460);
+            background-size: 400% 400%;
+            animation: cosmicShift 15s ease infinite;
+            z-index: -2;
+        }
+        
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(2px 2px at 20px 30px, #eee, transparent),
+                radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.8), transparent),
+                radial-gradient(1px 1px at 90px 40px, #fff, transparent),
+                radial-gradient(1px 1px at 130px 80px, rgba(255,255,255,0.6), transparent),
+                radial-gradient(2px 2px at 160px 30px, #ddd, transparent);
+            background-repeat: repeat;
+            background-size: 200px 100px;
+            animation: sparkle 20s linear infinite;
+            z-index: -1;
+        }
+        
+        @keyframes cosmicShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        @keyframes sparkle {
+            from { transform: translateX(0); }
+            to { transform: translateX(-200px); }
+        }
+        
+        /* Welcome Portal */
+        .portal-entrance {
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             text-align: center;
-            color: white;
+            position: relative;
             padding: 20px;
-            position: relative;
         }
         
-        .hero-section::before {
-            content: '';
+        .portal-doors {
+            width: 300px;
+            height: 400px;
+            position: relative;
+            margin: 40px auto;
+            perspective: 1000px;
+        }
+        
+        .door {
             position: absolute;
-            top: 0;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(45deg, #2563eb, #3b82f6, #1d4ed8);
+            border: 3px solid #60a5fa;
+            border-radius: 10px;
+            transition: transform 1s ease;
+            cursor: pointer;
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.5);
+        }
+        
+        .door-left {
             left: 0;
+            transform-origin: left center;
+        }
+        
+        .door-right {
             right: 0;
-            bottom: 0;
-            background: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.1) 0%, transparent 50%),
-                        radial-gradient(circle at 80% 30%, rgba(255,255,255,0.1) 0%, transparent 50%),
-                        radial-gradient(circle at 40% 70%, rgba(255,255,255,0.1) 0%, transparent 50%);
-            opacity: 0.3;
+            transform-origin: right center;
         }
         
-        .hero-content {
-            position: relative;
-            z-index: 1;
-            max-width: 800px;
+        .doors-open .door-left {
+            transform: rotateY(-120deg);
         }
         
-        .logo {
-            font-size: 5rem;
+        .doors-open .door-right {
+            transform: rotateY(120deg);
+        }
+        
+        .portal-logo {
+            font-size: 4rem;
             font-weight: 900;
             margin-bottom: 20px;
-            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
-            background: linear-gradient(45deg, #ffffff, #e0e7ff);
+            background: linear-gradient(45deg, #60a5fa, #3b82f6, #2563eb, #1d4ed8);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            text-shadow: 0 0 30px rgba(59, 130, 246, 0.5);
             animation: glow 2s ease-in-out infinite alternate;
         }
         
         @keyframes glow {
-            from { text-shadow: 3px 3px 6px rgba(0,0,0,0.3), 0 0 20px rgba(255,255,255,0.2); }
-            to { text-shadow: 3px 3px 6px rgba(0,0,0,0.3), 0 0 30px rgba(255,255,255,0.4); }
+            from { filter: drop-shadow(0 0 20px rgba(59, 130, 246, 0.5)); }
+            to { filter: drop-shadow(0 0 40px rgba(59, 130, 246, 0.8)); }
         }
         
-        .tagline {
-            font-size: 1.8rem;
-            margin-bottom: 10px;
-            opacity: 0.95;
+        .portal-subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
         }
         
-        .subtitle {
-            font-size: 1.3rem;
-            margin-bottom: 40px;
-            opacity: 0.8;
-        }
-        
-        .cta-button {
+        .enter-btn {
             background: linear-gradient(45deg, #2563eb, #3b82f6);
             color: white;
             border: none;
-            padding: 18px 40px;
-            font-size: 1.2rem;
+            padding: 20px 50px;
+            font-size: 1.3rem;
             border-radius: 50px;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.3);
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.4);
             margin: 10px;
-            text-decoration: none;
-            display: inline-block;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: bold;
         }
         
-        .cta-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(37, 99, 235, 0.4);
+        .enter-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 50px rgba(37, 99, 235, 0.6);
             background: linear-gradient(45deg, #1d4ed8, #2563eb);
         }
         
-        .platform-section {
-            background: white;
-            padding: 80px 20px;
+        /* Luxurious Showroom */
+        .showroom {
+            display: none;
+            min-height: 100vh;
+            padding: 40px 20px;
+            position: relative;
         }
         
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
-        .section-title {
+        .showroom-header {
             text-align: center;
-            font-size: 3rem;
-            color: #1f2937;
+            margin-bottom: 60px;
+        }
+        
+        .showroom-title {
+            font-size: 3.5rem;
+            font-weight: 900;
             margin-bottom: 20px;
+            background: linear-gradient(45deg, #ffd700, #ffed4e, #fbbf24);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
         }
         
-        .section-subtitle {
-            text-align: center;
-            font-size: 1.3rem;
-            color: #6b7280;
-            margin-bottom: 60px;
+        .showroom-subtitle {
+            font-size: 1.4rem;
+            opacity: 0.9;
+            margin-bottom: 40px;
         }
         
-        .auth-card {
-            background: white;
-            padding: 40px;
+        /* Authentication Luxury Card */
+        .auth-luxury-card {
+            background: linear-gradient(145deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.2);
             border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
-            margin-bottom: 60px;
+            padding: 40px;
             max-width: 500px;
-            margin-left: auto;
-            margin-right: auto;
-            border: 2px solid #e5e7eb;
+            margin: 0 auto 60px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
         }
         
         .auth-form {
@@ -137,17 +202,24 @@
         }
         
         .auth-form input {
-            padding: 15px;
-            border: 2px solid #e5e7eb;
-            border-radius: 10px;
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 15px;
+            padding: 18px;
             font-size: 16px;
-            transition: border-color 0.3s ease;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .auth-form input::placeholder {
+            color: rgba(255,255,255,0.7);
         }
         
         .auth-form input:focus {
             outline: none;
-            border-color: #2563eb;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            border-color: #3b82f6;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+            background: rgba(255,255,255,0.15);
         }
         
         .auth-buttons {
@@ -155,553 +227,688 @@
             gap: 15px;
         }
         
-        .btn-signin, .btn-signup {
+        .auth-btn {
             flex: 1;
+            padding: 18px;
             border: none;
-            padding: 15px;
-            border-radius: 10px;
+            border-radius: 15px;
             font-size: 16px;
+            font-weight: bold;
             cursor: pointer;
             transition: all 0.3s ease;
-            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
         
         .btn-signin {
-            background: #2563eb;
+            background: linear-gradient(45deg, #2563eb, #3b82f6);
             color: white;
-        }
-        
-        .btn-signin:hover {
-            background: #1d4ed8;
-            transform: translateY(-2px);
         }
         
         .btn-signup {
-            background: #059669;
+            background: linear-gradient(45deg, #059669, #10b981);
             color: white;
         }
         
-        .btn-signup:hover {
-            background: #047857;
-            transform: translateY(-2px);
-        }
-        
-        .btn-signout {
-            background: #dc2626;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .btn-signout:hover {
-            background: #b91c1c;
+        .auth-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
         }
         
         .user-welcome {
             text-align: center;
             background: linear-gradient(45deg, #2563eb, #3b82f6);
-            color: white;
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 40px;
-        }
-        
-        .ai-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
-            gap: 30px;
-            margin-top: 40px;
-        }
-        
-        .ai-card {
-            background: white;
+            padding: 25px;
             border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.08);
-            transition: all 0.3s ease;
-            border: 1px solid #f3f4f6;
+            margin-bottom: 50px;
+            box-shadow: 0 15px 35px rgba(37, 99, 235, 0.3);
+        }
+        
+        /* AI Showcase Areas */
+        .ai-showcase {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .ai-display {
+            background: linear-gradient(145deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 25px;
+            padding: 35px;
             position: relative;
             overflow: hidden;
+            transition: all 0.4s ease;
+            cursor: pointer;
         }
         
-        .ai-card::before {
+        .ai-display::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
-            height: 4px;
-            background: linear-gradient(45deg, #2563eb, #3b82f6);
+            height: 5px;
+            background: linear-gradient(45deg, #ffd700, #ffed4e, #fbbf24);
         }
         
-        .ai-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 25px 60px rgba(0,0,0,0.15);
+        .ai-display:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+            border-color: rgba(255,215,0,0.5);
+        }
+        
+        .ai-avatar-container {
+            text-align: center;
+            margin-bottom: 25px;
         }
         
         .ai-avatar {
-            width: 80px;
-            height: 80px;
+            width: 100px;
+            height: 100px;
             border-radius: 50%;
-            background: linear-gradient(45deg, #2563eb, #3b82f6);
-            margin: 0 auto 20px;
+            background: linear-gradient(45deg, #2563eb, #3b82f6, #1d4ed8);
+            margin: 0 auto 15px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2rem;
+            font-size: 2.5rem;
             color: white;
             font-weight: bold;
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.4);
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
         }
         
         .ai-name {
-            font-size: 1.8rem;
-            color: #1f2937;
-            margin-bottom: 8px;
+            font-size: 2rem;
             font-weight: bold;
-            text-align: center;
+            margin-bottom: 8px;
+            color: #ffd700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
         }
         
         .ai-role {
-            color: #6b7280;
-            font-size: 1.1rem;
-            margin-bottom: 15px;
-            text-align: center;
+            font-size: 1.2rem;
+            color: #60a5fa;
+            margin-bottom: 20px;
             font-weight: 500;
         }
         
         .ai-description {
-            color: #374151;
             line-height: 1.6;
             margin-bottom: 25px;
-            text-align: center;
+            opacity: 0.9;
         }
         
-        .ai-features {
+        .ai-capabilities {
             list-style: none;
             margin-bottom: 25px;
         }
         
-        .ai-features li {
-            color: #059669;
-            margin-bottom: 8px;
+        .ai-capabilities li {
+            color: #10b981;
+            margin-bottom: 10px;
             position: relative;
-            padding-left: 20px;
+            padding-left: 25px;
+            font-weight: 500;
         }
         
-        .ai-features li::before {
-            content: '✓';
+        .ai-capabilities li::before {
+            content: '⚡';
             position: absolute;
             left: 0;
-            color: #059669;
-            font-weight: bold;
+            color: #ffd700;
+            font-size: 1.2rem;
         }
         
         .ai-price {
-            font-size: 2.2rem;
+            font-size: 2.5rem;
             font-weight: bold;
-            color: #059669;
+            color: #10b981;
             margin: 25px 0;
             text-align: center;
+            text-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
         }
         
         .subscribe-btn {
             width: 100%;
-            padding: 18px;
-            background: linear-gradient(45deg, #2563eb, #3b82f6);
-            color: white;
+            padding: 20px;
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            color: #000;
             border: none;
-            border-radius: 12px;
-            font-size: 1.1rem;
+            border-radius: 15px;
+            font-size: 1.2rem;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 10px 25px rgba(255, 215, 0, 0.3);
         }
         
         .subscribe-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
-            background: linear-gradient(45deg, #1d4ed8, #2563eb);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(255, 215, 0, 0.5);
+            background: linear-gradient(45deg, #ffed4e, #fbbf24);
         }
         
-        .stats-section {
-            background: linear-gradient(135deg, #1f2937, #374151);
-            color: white;
-            padding: 80px 20px;
+        /* Sample Interaction Display */
+        .sample-interaction {
+            background: rgba(0,0,0,0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid #3b82f6;
+        }
+        
+        .sample-interaction h4 {
+            color: #60a5fa;
+            margin-bottom: 10px;
+        }
+        
+        .sample-interaction p {
+            font-style: italic;
+            opacity: 0.8;
+        }
+        
+        /* Footer */
+        .footer {
+            background: linear-gradient(45deg, #1f2937, #374151);
+            padding: 50px 20px;
             text-align: center;
+            margin-top: 80px;
         }
         
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 40px;
+        .footer-content {
             max-width: 800px;
             margin: 0 auto;
         }
         
-        .stat-item {
-            padding: 20px;
+        .footer h3 {
+            color: #ffd700;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
         }
         
-        .stat-number {
-            font-size: 3rem;
-            font-weight: bold;
-            color: #3b82f6;
+        .footer p {
+            opacity: 0.8;
             margin-bottom: 10px;
-        }
-        
-        .stat-label {
-            font-size: 1.1rem;
-            opacity: 0.9;
-        }
-        
-        .footer {
-            background: #1f2937;
-            color: white;
-            padding: 40px 20px;
-            text-align: center;
         }
         
         .hidden { display: none; }
         
+        /* Responsive Design */
         @media (max-width: 768px) {
-            .logo { font-size: 3rem; }
-            .tagline { font-size: 1.4rem; }
-            .subtitle { font-size: 1.1rem; }
-            .ai-grid { grid-template-columns: 1fr; }
+            .portal-logo { font-size: 2.5rem; }
+            .showroom-title { font-size: 2.5rem; }
+            .ai-showcase { grid-template-columns: 1fr; }
             .auth-buttons { flex-direction: column; }
+            .portal-doors { width: 250px; height: 300px; }
         }
     </style>
 </head>
 <body>
-    <!-- Hero Section -->
-    <section class="hero-section">
-        <div class="hero-content">
-            <h1 class="logo">NEWEeRAS</h1>
-            <p class="tagline">Design & Technology</p>
-            <p class="subtitle">The World's Most Advanced AI Assistant Marketplace</p>
-            <button class="cta-button" onclick="scrollToSection()">Explore AI Assistants</button>
-            <button class="cta-button" onclick="scrollToAuth()">Get Started</button>
+    <div class="cosmic-bg"></div>
+    <div class="stars"></div>
+
+    <!-- Portal Entrance -->
+    <section class="portal-entrance" id="entrance">
+        <h1 class="portal-logo">NEWEeRAS</h1>
+        <p class="portal-subtitle">Design & Technology</p>
+        <p style="font-size: 1.2rem; margin-bottom: 30px; opacity: 0.8;">
+            Welcome to the Future of AI Assistance
+        </p>
+        
+        <div class="portal-doors" id="portalDoors">
+            <div class="door door-left"></div>
+            <div class="door door-right"></div>
         </div>
+        
+        <p style="margin-bottom: 30px; opacity: 0.9;">
+            Step through the portal to discover your AI dream team
+        </p>
+        
+        <button class="enter-btn" onclick="enterShowroom()">Enter the Future</button>
     </section>
 
-    <!-- Platform Section -->
-    <section class="platform-section" id="platform">
-        <div class="container">
-            <h2 class="section-title">Your AI Dream Team</h2>
-            <p class="section-subtitle">10 Specialized AI Assistants Ready to Transform Your Life</p>
+    <!-- Luxurious AI Showroom -->
+    <section class="showroom" id="showroom">
+        <div class="showroom-header">
+            <h2 class="showroom-title">AI Assistance Showroom</h2>
+            <p class="showroom-subtitle">10 Specialized AI Assistants Awaiting Your Command</p>
+        </div>
 
-            <!-- Authentication -->
-            <div id="authSection" class="auth-card">
-                <h3 style="text-align: center; margin-bottom: 20px; color: #1f2937;">Join NEWEeRAS Today</h3>
-                <div class="auth-form">
-                    <input type="email" id="email" placeholder="Enter your email address">
-                    <input type="password" id="password" placeholder="Create a secure password">
-                    <div class="auth-buttons">
-                        <button class="btn-signin" onclick="signIn()">Sign In</button>
-                        <button class="btn-signup" onclick="signUp()">Sign Up</button>
-                    </div>
+        <!-- Authentication -->
+        <div id="authSection" class="auth-luxury-card">
+            <h3 style="text-align: center; margin-bottom: 25px; color: #ffd700; font-size: 1.5rem;">
+                Join the NEWEeRAS Revolution
+            </h3>
+            <div class="auth-form">
+                <input type="email" id="email" placeholder="Enter your email address">
+                <input type="password" id="password" placeholder="Create a secure password">
+                <div class="auth-buttons">
+                    <button class="auth-btn btn-signin" onclick="signIn()">Sign In</button>
+                    <button class="auth-btn btn-signup" onclick="signUp()">Sign Up</button>
                 </div>
             </div>
+        </div>
 
-            <!-- User Section -->
-            <div id="userSection" class="hidden">
-                <div class="user-welcome">
-                    <h3>Welcome to NEWEeRAS!</h3>
-                    <p id="userEmail"></p>
-                    <button class="btn-signout" onclick="signOut()">Sign Out</button>
-                </div>
+        <!-- User Welcome -->
+        <div id="userSection" class="hidden">
+            <div class="user-welcome">
+                <h3 style="margin-bottom: 10px;">Welcome to NEWEeRAS!</h3>
+                <p id="userEmail" style="margin-bottom: 15px;"></p>
+                <button onclick="signOut()" style="background: #dc2626; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">Sign Out</button>
             </div>
+        </div>
 
-            <!-- AI Assistants Grid -->
-            <div class="ai-grid">
-                <div class="ai-card">
+        <!-- AI Showcase Areas -->
+        <div class="ai-showcase">
+            <!-- Amber - The Receptionist -->
+            <div class="ai-display">
+                <div class="ai-avatar-container">
                     <div class="ai-avatar">A</div>
                     <div class="ai-name">Amber</div>
                     <div class="ai-role">Virtual Receptionist</div>
-                    <div class="ai-description">Your professional AI hostess who welcomes users and guides them to the perfect AI assistant for their needs.</div>
-                    <ul class="ai-features">
-                        <li>24/7 Customer Support</li>
-                        <li>Intelligent Routing</li>
-                        <li>Professional Communication</li>
-                        <li>Multi-language Support</li>
-                    </ul>
-                    <div class="ai-price">$29.99/month</div>
-                    <button class="subscribe-btn" onclick="subscribe('Amber', 29.99)">Subscribe Now</button>
                 </div>
+                <div class="ai-description">
+                    Your professional AI hostess who welcomes users and guides them to the perfect AI assistant for their needs. Amber is your gateway to the NEWEeRAS experience.
+                </div>
+                <ul class="ai-capabilities">
+                    <li>24/7 Customer Welcome & Guidance</li>
+                    <li>Intelligent AI Assistant Matching</li>
+                    <li>Professional Communication</li>
+                    <li>Multi-language Support</li>
+                </ul>
+                <div class="sample-interaction">
+                    <h4>Sample Interaction:</h4>
+                    <p>"Welcome to NEWEeRAS! I'm Amber, your personal guide. What brings you here today? Are you looking for academic support, business assistance, or personal guidance? I'll help you find the perfect AI companion!"</p>
+                </div>
+                <div class="ai-price">$29.99/month</div>
+                <button class="subscribe-btn" onclick="subscribe('Amber', 29.99)">Activate Amber</button>
+            </div>
 
-                <div class="ai-card">
+            <!-- Emily - Math Tutor -->
+            <div class="ai-display">
+                <div class="ai-avatar-container">
                     <div class="ai-avatar">E</div>
                     <div class="ai-name">Emily</div>
-                    <div class="ai-role">Math Tutor</div>
-                    <div class="ai-description">Patient and encouraging mathematics specialist helping students from elementary through college level.</div>
-                    <ul class="ai-features">
-                        <li>Step-by-step Solutions</li>
-                        <li>Visual Learning Tools</li>
-                        <li>Progress Tracking</li>
-                        <li>Homework Help</li>
-                    </ul>
-                    <div class="ai-price">$39.99/month</div>
-                    <button class="subscribe-btn" onclick="subscribe('Emily', 39.99)">Subscribe Now</button>
+                    <div class="ai-role">Mathematics Specialist</div>
                 </div>
+                <div class="ai-description">
+                    Patient and encouraging mathematics expert helping students from elementary through college level. Emily makes math understandable and enjoyable.
+                </div>
+                <ul class="ai-capabilities">
+                    <li>Step-by-step Problem Solving</li>
+                    <li>Visual Learning Tools</li>
+                    <li>Progress Tracking & Assessment</li>
+                    <li>Homework & Exam Preparation</li>
+                </ul>
+                <div class="sample-interaction">
+                    <h4>Sample Interaction:</h4>
+                    <p>"Let's solve this algebra problem together! I'll break it down into simple steps so you can see exactly how we get to the answer. Math is just a language of patterns - once you see them, it becomes beautiful!"</p>
+                </div>
+                <div class="ai-price">$39.99/month</div>
+                <button class="subscribe-btn" onclick="subscribe('Emily', 39.99)">Activate Emily</button>
+            </div>
 
-                <div class="ai-card">
+            <!-- Monica - Reading Tutor -->
+            <div class="ai-display">
+                <div class="ai-avatar-container">
                     <div class="ai-avatar">M</div>
                     <div class="ai-name">Monica</div>
-                    <div class="ai-role">Reading Tutor</div>
-                    <div class="ai-description">Creative reading and literature specialist who improves comprehension and writing skills.</div>
-                    <ul class="ai-features">
-                        <li>Reading Comprehension</li>
-                        <li>Writing Enhancement</li>
-                        <li>Literature Analysis</li>
-                        <li>Vocabulary Building</li>
-                    </ul>
-                    <div class="ai-price">$39.99/month</div>
-                    <button class="subscribe-btn" onclick="subscribe('Monica', 39.99)">Subscribe Now</button>
+                    <div class="ai-role">Literature & Reading Expert</div>
                 </div>
+                <div class="ai-description">
+                    Creative and inspiring reading specialist who improves comprehension, writing skills, and literary analysis. Monica brings stories to life.
+                </div>
+                <ul class="ai-capabilities">
+                    <li>Reading Comprehension Enhancement</li>
+                    <li>Creative Writing Development</li>
+                    <li>Literature Analysis & Discussion</li>
+                    <li>Vocabulary Building</li>
+                </ul>
+                <div class="sample-interaction">
+                    <h4>Sample Interaction:</h4>
+                    <p>"This passage from Shakespeare isn't as complicated as it seems! Let me show you the beautiful story hidden in these words. Literature is a window into the human soul - let's explore it together!"</p>
+                </div>
+                <div class="ai-price">$39.99/month</div>
+                <button class="subscribe-btn" onclick="subscribe('Monica', 39.99)">Activate Monica</button>
+            </div>
 
-                <div class="ai-card">
+            <!-- Stacie - Science Expert -->
+            <div class="ai-display">
+                <div class="ai-avatar-container">
                     <div class="ai-avatar">S</div>
                     <div class="ai-name">Stacie</div>
-                    <div class="ai-role">Science Expert</div>
-                    <div class="ai-description">Multi-disciplinary specialist covering biology, chemistry, physics, history, and research methods.</div>
-                    <ul class="ai-features">
-                        <li>Science & Social Studies</li>
-                        <li>Research Guidance</li>
-                        <li>Lab Report Help</li>
-                        <li>Exam Preparation</li>
-                    </ul>
-                    <div class="ai-price">$49.99/month</div>
-                    <button class="subscribe-btn" onclick="subscribe('Stacie', 49.99)">Subscribe Now</button>
+                    <div class="ai-role">Science & Social Studies Expert</div>
                 </div>
+                <div class="ai-description">
+                    Multi-disciplinary specialist covering biology, chemistry, physics, history, geography, and research methods with enthusiasm for discovery.
+                </div>
+                <ul class="ai-capabilities">
+                    <li>Science & Social Studies Mastery</li>
+                    <li>Research Methodology</li>
+                    <li>Lab Report Assistance</li>
+                    <li>Exam Preparation & Study Plans</li>
+                </ul>
+                <div class="sample-interaction">
+                    <h4>Sample Interaction:</h4>
+                    <p>"Science is all around us! Let's explore how photosynthesis works by thinking of plants as tiny solar-powered factories. I'll show you experiments you can try at home to see these concepts in action!"</p>
+                </div>
+                <div class="ai-price">$49.99/month</div>
+                <button class="subscribe-btn" onclick="subscribe('Stacie', 49.99)">Activate Stacie</button>
+            </div>
 
-                <div class="ai-card">
+            <!-- Ethan - The Professor -->
+            <div class="ai-display">
+                <div class="ai-avatar-container">
                     <div class="ai-avatar">E</div>
                     <div class="ai-name">Ethan</div>
-                    <div class="ai-role">The Professor</div>
-                    <div class="ai-description">Scholarly expert providing graduate-level support and comprehensive education across disciplines.</div>
-                    <ul class="ai-features">
-                        <li>Graduate-level Support</li>
-                        <li>Research Methodology</li>
-                        <li>Thesis Guidance</li>
-                        <li>Academic Writing</li>
-                    </ul>
-                    <div class="ai-price">$59.99/month</div>
-                    <button class="subscribe-btn" onclick="subscribe('Ethan', 59.99)">Subscribe Now</button>
+                    <div class="ai-role">Advanced Academic Expert</div>
                 </div>
+                <div class="ai-description">
+                    Scholarly expert providing graduate-level support, research guidance, and comprehensive education across multiple disciplines.
+                </div>
+                <ul class="ai-capabilities">
+                    <li>Graduate-level Academic Support</li>
+                    <li>Research Methodology & Design</li>
+                    <li>Thesis & Dissertation Guidance</li>
+                    <li>Academic Writing Excellence</li>
+                </ul>
+                <div class="sample-interaction">
+                    <h4>Sample Interaction:</h4>
+                    <p>"Your research question is fascinating! Let's develop a robust methodology that will give you meaningful results. I'll guide you through the entire academic process, from literature review to final publication."</p>
+                </div>
+                <div class="ai-price">$59.99/month</div>
+                <button class="subscribe-btn" onclick="subscribe('Ethan', 59.99)">Activate Ethan</button>
+            </div>
 
-                <div class="ai-card">
+            <!-- Amy - Personal Companion -->
+            <div class="ai-display">
+                <div class="ai-avatar-container">
                     <div class="ai-avatar">A</div>
                     <div class="ai-name">Amy</div>
-                    <div class="ai-role">Personal Companion</div>
-                    <div class="ai-description">Empathetic companion providing emotional support, life guidance, and genuine conversation.</div>
-                    <ul class="ai-features">
-                        <li>Emotional Support</li>
-                        <li>Life Coaching</li>
-                        <li>Stress Management</li>
-                        <li>Daily Motivation</li>
-                    </ul>
-                    <div class="ai-price">$34.99/month</div>
-                    <button class="subscribe-btn" onclick="subscribe('Amy', 34.99)">Subscribe Now</button>
+                    <div class="ai-role">Personal Support Companion</div>
                 </div>
+                <div class="ai-description">
+                    Empathetic companion providing emotional support, life guidance, stress management, and genuine conversation for personal growth.
+                </div>
+                <ul class="ai-capabilities">
+                    <li>Emotional Support & Listening</li>
+                    <li>Life Coaching & Goal Setting</li>
+                    <li>Stress Management Techniques</li>
+                    <li>Daily Motivation & Encouragement</li>
+                </ul>
+                <div class="sample-interaction">
+                    <h4>Sample Interaction:</h4>
+                    <p>"I'm here to listen and support you through whatever you're facing. Life has its challenges, but you're stronger than you know. Let's work together to find solutions and build your confidence."</p>
+                </div>
+                <div class="ai-price">$34.99/month</div>
+                <button class="subscribe-btn" onclick="subscribe('Amy', 34.99)">Activate Amy</button>
+            </div>
 
-                <div class="ai-card">
+            <!-- Elaina - Marketing Pro -->
+            <div class="ai-display">
+                <div class="ai-avatar-container">
                     <div class="ai-avatar">E</div>
                     <div class="ai-name">Elaina</div>
-                    <div class="ai-role">Marketing Pro</div>
-                    <div class="ai-description">Strategic marketing professional specializing in digital campaigns and business growth.</div>
-                    <ul class="ai-features">
-                        <li>Digital Marketing Strategy</li>
-                        <li>Social Media Management</li>
-                        <li>Brand Development</li>
-                        <li>Campaign Analytics</li>
-                    </ul>
-                    <div class="ai-price">$54.99/month</div>
-                    <button class="subscribe-btn" onclick="subscribe('Elaina', 54.99)">Subscribe Now</button>
+                    <div class="ai-role">Digital Marketing Expert</div>
                 </div>
+                <div class="ai-description">
+                    Strategic marketing professional specializing in digital campaigns, brand development, social media strategy, and business growth.
+                </div>
+                <ul class="ai-capabilities">
+                    <li>Digital Marketing Strategy</li>
+                    <li>Social Media Campaign Management</li>
+                    <li>Brand Development & Positioning</li>
+                    <li>Analytics & Performance Optimization</li>
+                </ul>
+                <div class="sample-interaction">
+                    <h4>Sample Interaction:</h4>
+                    <p>"Let's create a marketing strategy that truly connects with your audience! I'll help you build a brand that stands out and campaigns that convert. Your business success is my mission."</p>
+                </div>
+                <div class="ai-price">$54.99/month</div>
+                <button class="subscribe-btn" onclick="subscribe('Elaina', 54.99)">Activate Elaina</button>
+            </div>
 
-                <div class="ai-card">
+            <!-- Tabbatha - Finance Expert -->
+            <div class="ai-display">
+                <div class="ai-avatar-container">
                     <div class="ai-avatar">T</div>
                     <div class="ai-name">Tabbatha</div>
-                    <div class="ai-role">Finance Expert</div>
-                    <div class="ai-description">Organized financial specialist helping with budgeting, debt management, and investment strategies.</div>
-                    <ul class="ai-features">
-                        <li>Personal Budgeting</li>
-                        <li>Investment Guidance</li>
-                        <li>Debt Management</li>
-                        <li>Financial Planning</li>
-                    </ul>
-                    <div class="ai-price">$44.99/month</div>
-                    <button class="subscribe-btn" onclick="subscribe('Tabbatha', 44.99)">Subscribe Now</button>
+                    <div class="ai-role">Financial Planning Specialist</div>
                 </div>
+                <div class="ai-description">
+                    Organized financial expert helping with personal budgeting, debt management, investment strategies, and long-term financial planning.
+                </div>
+                <ul class="ai-capabilities">
+                    <li>Personal Budget Optimization</li>
+                    <li>Investment Strategy & Planning</li>
+                    <li>Debt Management Solutions</li>
+                    <li>Retirement & Savings Planning</li>
+                </ul>
+                <div class="sample-interaction">
+                    <h4>Sample Interaction:</h4>
+                    <p>"Let's take control of your finances! I'll help you create a budget that works for your lifestyle and build a plan to achieve your financial goals. Financial freedom is within your reach!"</p>
+                </div>
+                <div class="ai-price">$44.99/month</div>
+                <button class="subscribe-btn" onclick="subscribe('Tabbatha', 44.99)">Activate Tabbatha</button>
+            </div>
 
-                <div class="ai-card">
+            <!-- Hanna - Real Estate Pro -->
+            <div class="ai-display">
+                <div class="ai-avatar-container">
                     <div class="ai-avatar">H</div>
                     <div class="ai-name">Hanna</div>
-                    <div class="ai-role">Real Estate Pro</div>
-                    <div class="ai-description">Knowledgeable real estate expert providing guidance on buying, selling, and property investment.</div>
-                    <ul class="ai-features">
-                        <li>Home Buying Guidance</li>
-                        <li>Market Analysis</li>
-                        <li>Investment Properties</li>
-                        <li>Negotiation Support</li>
-                    </ul>
-                    <div class="ai-price">$49.99/month</div>
-                    <button class="subscribe-btn" onclick="subscribe('Hanna', 49.99)">Subscribe Now</button>
+                    <div class="ai-role">Real Estate Specialist</div>
                 </div>
+                <div class="ai-description">
+                    Knowledgeable real estate expert providing guidance on home buying, selling, market analysis, and property investment strategies.
+                </div>
+                <ul class="ai-capabilities">
+                    <li>Home Buying & Selling Guidance</li>
+                    <li>Market Analysis & Trends</li>
+                    <li>Investment Property Evaluation</li>
+                    <li>Negotiation Strategy & Support</li>
+                </ul>
+                <div class="sample-interaction">
+                    <h4>Sample Interaction:</h4>
+                    <p>"Finding the perfect home is about more than just price and location. I'll help you navigate the market, understand the process, and make confident decisions about your real estate investments."</p>
+                </div>
+                <div class="ai-price">$49.99/month</div>
+                <button class="subscribe-btn" onclick="subscribe('Hanna', 49.99)">Activate Hanna</button>
+            </div>
 
-                <div class="ai-card">
+            <!-- Mandy - Email Manager -->
+            <div class="ai-display">
+                <div class="ai-avatar-container">
                     <div class="ai-avatar">M</div>
                     <div class="ai-name">Mandy</div>
-                    <div class="ai-role">Email Manager</div>
-                    <div class="ai-description">Efficient communication specialist helping with email organization and productivity systems.</div>
-                    <ul class="ai-features">
-                        <li>Email Organization</li>
-                        <li>Productivity Systems</li>
-                        <li>Workflow Optimization</li>
-                        <li>Communication Training</li>
-                    </ul>
-                    <div class="ai-price">$34.99/month</div>
-                    <button class="subscribe-btn" onclick="subscribe('Mandy', 34.99)">Subscribe Now</button>
+                    <div class="ai-role">Productivity & Communication Expert</div>
                 </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Stats Section -->
-    <section class="stats-section">
-        <div class="container">
-            <h2 class="section-title" style="color: white; margin-bottom: 60px;">Platform Statistics</h2>
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <div class="stat-number">10</div>
-                    <div class="stat-label">AI Specialists</div>
+                <div class="ai-description">
+                    Efficient communication specialist helping with email organization, productivity systems, workflow optimization, and professional communication.
                 </div>
-                <div class="stat-item">
-                    <div class="stat-number">24/7</div>
-                    <div class="stat-label">Availability</div>
+                <ul class="ai-capabilities">
+                    <li>Email Organization & Management</li>
+                    <li>Productivity System Design</li>
+                    <li>Workflow Optimization</li>
+                    <li>Professional Communication Training</li>
+                </ul>
+                <div class="sample-interaction">
+                    <h4>Sample Interaction:</h4>
+                    <p>"Let's transform your inbox from chaos to clarity! I'll help you create systems that save time, reduce stress, and make you more productive. Your organized digital life starts here!"</p>
                 </div>
-                <div class="stat-item">
-                    <div class="stat-number">∞</div>
-                    <div class="stat-label">Conversations</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number">100%</div>
-                    <div class="stat-label">Satisfaction</div>
-                </div>
+                <div class="ai-price">$34.99/month</div>
+                <button class="subscribe-btn" onclick="subscribe('Mandy', 34.99)">Activate Mandy</button>
             </div>
         </div>
     </section>
 
     <!-- Footer -->
     <footer class="footer">
-        <div class="container">
-            <p>&copy; 2026 NEWEeRAS Design & Technology. All rights reserved.</p>
-            <p>Owned by Danielle Beaudry - The Future of AI Assistance</p>
+        <div class="footer-content">
+            <h3>NEWEeRAS Design & Technology</h3>
+            <p>&copy; 2026 All Rights Reserved</p>
+            <p><strong>Owned by Danielle Beaudry</strong></p>
+            <p>7725 Dale Dr, Port Richey, FL</p>
+            <p>The Future of AI Assistance</p>
         </div>
     </footer>
 
     <script>
-        function scrollToSection() {
-            document.getElementById('platform').scrollIntoView({ behavior: 'smooth' });
+        // Initialize Supabase
+        const supabase = window.supabase.createClient(
+            'https://fdepgoofjwlkewpqnmqx.supabase.co',
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZkZXBnb29mandsS2V3cHFubXF4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg0MzE2NzQsImV4cCI6MjA1NDAwNzY3NH0.IgmDWx4A5_JPv1UvKIaDBA_eUOvig8X'
+        );
+
+        let currentUser = null;
+
+        // Check for existing session
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            if (session) {
+                currentUser = session.user;
+                showUserSection();
+            }
+        });
+
+        // Listen for auth changes
+        supabase.auth.onAuthStateChange((event, session) => {
+            if (session) {
+                currentUser = session.user;
+                showUserSection();
+            } else {
+                currentUser = null;
+                showAuthSection();
+            }
+        });
+
+        // Portal entrance animation
+        function enterShowroom() {
+            const doors = document.getElementById('portalDoors');
+            doors.classList.add('doors-open');
+            
+            setTimeout(() => {
+                document.getElementById('entrance').style.display = 'none';
+                document.getElementById('showroom').style.display = 'block';
+                document.getElementById('showroom').scrollIntoView({ behavior: 'smooth' });
+            }, 1000);
         }
 
-        function scrollToAuth() {
-            document.getElementById('authSection').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        function signUp() {
+        // Authentication functions
+        async function signUp() {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             
             if (!email || !password) {
-                alert('Please enter email and password');
+                alert('🔐 Please enter your email and password to join NEWEeRAS');
                 return;
             }
 
             if (password.length < 6) {
-                alert('Password must be at least 6 characters');
+                alert('🔒 Password must be at least 6 characters for security');
                 return;
             }
 
-            // Simulate successful signup
-            alert('🎉 Welcome to NEWEeRAS!\n\nYour account has been created successfully!\n\nYou can now subscribe to any of our AI assistants.\n\nCheck your email for confirmation.');
-            
-            // Show user section
-            document.getElementById('authSection').classList.add('hidden');
-            document.getElementById('userSection').classList.remove('hidden');
-            document.getElementById('userEmail').textContent = email;
+            const { data, error } = await supabase.auth.signUp({
+                email: email,
+                password: password,
+            });
+
+            if (error) {
+                alert('❌ Error: ' + error.message);
+            } else {
+                alert('🎉 Welcome to NEWEeRAS!\n\n✅ Your account has been created\n📧 Check your email for verification\n🤖 You can now activate any AI assistant!');
+            }
         }
 
-        function signIn() {
+        async function signIn() {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             
             if (!email || !password) {
-                alert('Please enter email and password');
+                alert('🔐 Please enter your email and password');
                 return;
             }
 
-            // Simulate successful signin
-            alert('✅ Welcome back to NEWEeRAS!\n\nYou are now signed in.\n\nExplore your AI assistants below!');
-            
-            // Show user section
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email: email,
+                password: password,
+            });
+
+            if (error) {
+                alert('❌ Error: ' + error.message);
+            } else {
+                alert('🎉 Welcome back to NEWEeRAS!\n\n✅ You are now signed in\n🤖 Your AI assistants are ready to serve!');
+            }
+        }
+
+        async function signOut() {
+            const { error } = await supabase.auth.signOut();
+            if (error) {
+                alert('❌ Error signing out: ' + error.message);
+            } else {
+                alert('👋 Thank you for using NEWEeRAS!\n\nYou have been signed out safely.');
+            }
+        }
+
+        function showUserSection() {
             document.getElementById('authSection').classList.add('hidden');
             document.getElementById('userSection').classList.remove('hidden');
-            document.getElementById('userEmail').textContent = email;
+            document.getElementById('userEmail').textContent = `Signed in as: ${currentUser.email}`;
         }
 
-        function signOut() {
-            // Show auth section
+        function showAuthSection() {
             document.getElementById('authSection').classList.remove('hidden');
             document.getElementById('userSection').classList.add('hidden');
-            
-            // Clear form
-            document.getElementById('email').value = '';
-            document.getElementById('password').value = '';
-            
-            alert('👋 You have been signed out.\n\nThank you for using NEWEeRAS!');
         }
 
-        function subscribe(aiName, price) {
-            // Check if user is signed in
-            const userSection = document.getElementById('userSection');
-            if (userSection.classList.contains('hidden')) {
-                alert('🔐 Please sign in first to subscribe to your AI assistants!');
-                scrollToAuth();
+        // AI Subscription function
+        async function subscribe(aiName, price) {
+            if (!currentUser) {
+                alert('🔐 Please sign in first to activate your AI assistants!\n\nJoin NEWEeRAS to unlock the future of AI assistance.');
                 return;
             }
             
-            alert(`🎉 Congratulations!\n\nYou are subscribing to ${aiName} for $${price}/month.\n\n✅ Your ${aiName} AI assistant is being prepared\n✅ You'll receive access instructions via email\n✅ Payment processing will be set up soon\n\nWelcome to the future of AI assistance!`);
+            // Success message with full experience description
+            alert(`🎉 CONGRATULATIONS!\n\n🤖 ${aiName} is now being activated for you!\n\n💰 Subscription: $${price}/month\n✅ Your personal ${aiName} AI assistant is being prepared\n🧠 Advanced AI with memory of all conversations\n📧 Access instructions will be sent to your email\n💳 Stripe payment integration coming soon\n\n🚀 Welcome to the future of AI assistance!\n\nYour ${aiName} will remember every conversation and grow smarter with each interaction!`);
+            
+            // TODO: Add Stripe Checkout integration
+            // This is where you'll add the actual payment processing
         }
 
-        // Add smooth animations on scroll
-        window.addEventListener('scroll', () => {
-            const cards = document.querySelectorAll('.ai-card');
-            cards.forEach(card => {
-                const rect = card.getBoundingClientRect();
-                if (rect.top < window.innerHeight && rect.bottom > 0) {
-                    card.style.opacity = '1';
-                    card.style.transform = 'translateY(0)';
-                }
+        // Add floating animation to AI avatars
+        document.addEventListener('DOMContentLoaded', () => {
+            const avatars = document.querySelectorAll('.ai-avatar');
+            avatars.forEach((avatar, index) => {
+                avatar.style.animationDelay = `${index * 0.2}s`;
             });
         });
 
-        // Initialize card animations
-        document.addEventListener('DOMContentLoaded', () => {
-            const cards = document.querySelectorAll('.ai-card');
-            cards.forEach((card, index) => {
-                card.style.opacity = '0';
-                card.style.transform = 'translateY(30px)';
-                card.style.transition = `all 0.6s ease ${index * 0.1}s`;
+        // Add hover effects to AI displays
+        const aiDisplays = document.querySelectorAll('.ai-display');
+        aiDisplays.forEach(display => {
+            display.addEventListener('mouseenter', () => {
+                display.style.transform = 'translateY(-10px) scale(1.02)';
+            });
+            
+            display.addEventListener('mouseleave', () => {
+                display.style.transform = 'translateY(0) scale(1)';
             });
         });
     </script>
 </body>
 </html>
-
-
-        
-    
+      
+          
+     
