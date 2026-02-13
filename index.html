@@ -1,100 +1,166 @@
-
-   <!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>NEWEeRA • AI Marketplace</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="styles.css" />
-<<header class="">
-    <video class="hero-video" autoplay muted loop playsinline>
-      <source src="https://cdn.coverr.co/videos/coverr-futuristic-cityscape-1080p.mp4" type="video/mp4" />
-    </video>
-    <div class="hero-overlay"></div>
-    <div class="hero-content">
-      <h1>NEWEeRA AI MARKETPLACE</h1>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>New Era — AI Marketplace</title>
+  <style>
+    :root{--bg:#0f1724;--card:#0b1220;--accent:#06b6d4;--muted:#94a3b8;--white:#e6eef6}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:var(--white);background:linear-gradient(180deg,#071021 0%,#071827 100%)}
+    .wrap{min-height:100%;display:flex;align-items:center;justify-content:center;padding:32px}
+    .card{width:100%;max-width:980px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border-radius:12px;padding:20px;box-shadow:0 8px 30px rgba(2,6,23,0.6);display:grid;grid-template-columns:1fr 420px;gap:20px;align-items:start}
+    .hero{padding:8px}
+    h1{margin:0 0 8px;font-size:1.6rem;letter-spacing:-0.02em}
+    p.lead{margin:0 0 18px;color:var(--muted)}
+    .cta-row{display:flex;gap:12px;align-items:center}
+    .btn{background:var(--accent);color:#042027;border:0;padding:10px 14px;border-radius:8px;font-weight:600;cursor:pointer}
+    .btn.secondary{background:transparent;color:var(--white);border:1px solid rgba(255,255,255,0.06)}
+    .note{font-size:0.85rem;color:var(--muted);margin-top:8px}
+    /* Right column */
+    .media{display:flex;flex-direction:column;gap:12px}
+    .video-wrap{position:relative;border-radius:10px;overflow:hidden;background:#000;height:240px;display:flex;align-items:center;justify-content:center}
+    video{width:100%;height:100%;object-fit:cover;display:block;background:#000}
+    .overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
+    .play-overlay{pointer-events:auto;background:linear-gradient(90deg,rgba(0,0,0,0.35),rgba(0,0,0,0.15));display:flex;align-items:center;justify-content:center;height:100%;width:100%}
+    .play-icon{background:rgba(255,255,255,0.06);border-radius:999px;padding:12px;display:inline-flex;align-items:center;justify-content:center}
+    .ai-list{background:var(--card);padding:12px;border-radius:8px;max-height:220px;overflow:auto}
+    .ai-item{display:flex;justify-content:space-between;padding:8px 6px;border-bottom:1px dashed rgba(255,255,255,0.02)}
+    .ai-item:last-child{border-bottom:0}
+    .ai-name{font-weight:600}
+    .ai-role{color:var(--muted);font-size:0.9rem}
+    .hidden{display:none !important}
+    @media (max-width:920px){.card{grid-template-columns:1fr;max-width:720px}.media{order:-1}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <main class="card" role="main" aria-labelledby="pageTitle">
+      <section class="hero" aria-label="Intro">
+        <h1 id="pageTitle">New Era AI Marketplace</h1>
+        <p class="lead">Discover specialized assistants built for real tasks. Click the demo to start the intro video and explore the lineup.</p>
 
+        <div class="cta-row" aria-hidden="false">
+          <button id="playBtn" class="btn" aria-controls="heroVideo" aria-pressed="false">Play Intro</button>
+          <a id="marketBtn" class="btn secondary" href="#market" role="button">Open Marketplace</a>
+        </div>
 
-      <p>10 specialized AI minds. One futuristic control center. Subscribe. Connect. Command.</p>
-      <button id="enterMarketplaceBtn" class="primary-btn">Enter Marketplace</button>
-    </div>
-  </header>
+        <p class="note" id="statusNote" aria-live="polite">If the video doesn't start, click Play again. The AI list below is editable in your source files.</p>
+      </section>
 
-  <main id="marketplace" class="hidden">
-    <section class="ai-grid">
-      <div class="ai-card" data-ai-id="amber">
-        <h2>Amber • Emotional Anchor</h2>
-        <p>Voice-first, emotionally adaptive, your grounding presence in chaos.</p>
-        <button class="subscribe-btn" data-plan-id="amber_monthly">Subscribe</button>
-      </div>
+      <aside class="media" aria-label="Demo and AI list">
+        <div class="video-wrap" id="videoContainer" aria-hidden="false">
+          <!-- VIDEO: replace the placeholder URL below with your actual hosted video URL.
+               Keep muted and playsinline to satisfy autoplay policies; controls are provided for manual playback. -->
+          <video id="heroVideo" muted playsinline preload="metadata" controls poster="">
+            <!-- Replace YOUR_VIDEO_URL_HERE with the actual URL or relative path to your MP4/WebM file -->
+            <source src="YOUR_VIDEO_URL_HERE" type="video/mp4">
+            <!-- Example alternative source (WebM) -->
+            <!-- <source src="YOUR_VIDEO_URL_HERE.webm" type="video/webm"> -->
+            Your browser does not support HTML5 video. Click Play to open the demo in a new tab.
+          </video>
 
-      <div class="ai-card" data-ai-id="orion">
-        <h2>Orion • Strategy Architect</h2>
-        <p>High-level business strategy, scenario planning, and decision trees.</p>
-        <button class="subscribe-btn" data-plan-id="orion_monthly">Subscribe</button>
-      </div>
+          <div class="overlay">
+            <div class="play-overlay" id="videoOverlay" aria-hidden="false">
+              <div class="play-icon" title="Click Play to start demo" aria-hidden="true">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M8 5v14l11-7L8 5z" fill="white" opacity="0.95"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
 
-      <div class="ai-card" data-ai-id="vega">
-        <h2>Vega • Visual Director</h2>
-        <p>Brand visuals, cinematic prompts, and image direction.</p>
-        <button class="subscribe-btn" data-plan-id="vega_monthly">Subscribe</button>
-      </div>
+        <div class="ai-list" id="aiList" aria-live="polite">
+          <!-- Replace these entries with your actual AI names and subjects in your source files -->
+          <div class="ai-item"><div class="ai-name">Ava</div><div class="ai-role">Virtual Receptionist</div></div>
+          <div class="ai-item"><div class="ai-name">Sage</div><div class="ai-role">Research Assistant</div></div>
+          <div class="ai-item"><div class="ai-name">Atlas</div><div class="ai-role">Data Wrangler</div></div>
+          <div class="ai-item"><div class="ai-name">Iris</div><div class="ai-role">Creative Copywriter</div></div>
+        </div>
+      </aside>
+    </main>
+  </div>
 
-      <div class="ai-card" data-ai-id="atlas">
-        <h2>Atlas • Ops & Logistics</h2>
-        <p>Routes, scheduling logic, and operational workflows.</p>
-        <button class="subscribe-btn" data-plan-id="atlas_monthly">Subscribe</button>
-      </div>
+  <script>
+    (function () {
+      const playBtn = document.getElementById('playBtn');
+      const video = document.getElementById('heroVideo');
+      const overlay = document.getElementById('videoOverlay');
+      const statusNote = document.getElementById('statusNote');
 
-      <div class="ai-card" data-ai-id="lyra">
-        <h2>Lyra • Copy & Voice</h2>
-        <p>Ad copy, tone-matching, and scriptwriting.</p>
-        <button class="subscribe-btn" data-plan-id="lyra_monthly">Subscribe</button>
-      </div>
+      async function safePlay() {
+        if (!video) return;
+        try {
+          video.muted = true;
+          video.playsInline = true;
+          // Attempt autoplay; if blocked, user can click controls
+          await video.play();
+          playBtn.setAttribute('aria-pressed','true');
+          overlay.classList.add('hidden');
+          statusNote.textContent = 'Playing demo. Use controls or click the video to pause.';
+        } catch (err) {
+          console.error('Video play failed:', err);
+          statusNote.textContent = 'Autoplay blocked or video unavailable. Click Play or use the controls to start playback.';
+        }
+      }
 
-      <div class="ai-card" data-ai-id="nova">
-        <h2>Nova • Product Architect</h2>
-        <p>Offer design, feature mapping, and funnels.</p>
-        <button class="subscribe-btn" data-plan-id="nova_monthly">Subscribe</button>
-      </div>
+      playBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        safePlay();
+      });
 
-      <div class="ai-card" data-ai-id="cipher">
-        <h2>Cipher • Security & Flows</h2>
-        <p>Voice-password logic, verification flows, and access rules.</p>
-        <button class="subscribe-btn" data-plan-id="cipher_monthly">Subscribe</button>
-      </div>
+      overlay.addEventListener('click', (e) => {
+        e.preventDefault();
+        safePlay();
+      });
 
-      <div class="ai-card" data-ai-id="echo">
-        <h2>Echo • Analytics Whisperer</h2>
-        <p>Reads your numbers, explains them in plain language.</p>
-        <button class="subscribe-btn" data-plan-id="echo_monthly">Subscribe</button>
-      </div>
+      video.addEventListener('error', (ev) => {
+        console.error('Video element error:', ev);
+        statusNote.textContent = 'Video failed to load. Check the video URL or server configuration.';
+        const src = video.querySelector('source')?.src || video.src;
+        if (src) {
+          const link = document.createElement('a');
+          link.href = src;
+          link.textContent = 'Open video file';
+          link.target = '_blank';
+          link.rel = 'noopener noreferrer';
+          statusNote.appendChild(document.createTextNode(' '));
+          statusNote.appendChild(link);
+        }
+      });
 
-      <div class="ai-card" data-ai-id="zenith">
-        <h2>Zenith • High-Stakes Advisor</h2>
-        <p>Risk, reward, and “what if” breakdowns.</p>
-        <button class="subscribe-btn" data-plan-id="zenith_monthly">Subscribe</button>
-      </div>
+      playBtn.addEventListener('keydown', (ev) => {
+        if (ev.key === ' ' || ev.key === 'Enter') {
+          ev.preventDefault();
+          safePlay();
+        }
+      });
 
-      <div class="ai-card" data-ai-id="muse">
-        <h2>Muse • Idea Engine</h2>
-        <p>Rapid-fire concepts, names, angles, and hooks.</p>
-        <button class="subscribe-btn" data-plan-id="muse_monthly">Subscribe</button>
-      </div>
-    </section>
+      window.addEventListener('load', () => {
+        const src = video.querySelector('source')?.src || video.src;
+        if (!src || src.includes('YOUR_VIDEO_URL_HERE')) {
+          statusNote.textContent = 'No video source found. Replace the placeholder src in the <source> tag with your video URL or relative path.';
+        }
+      });
 
-    <section id="console" class="console hidden">
-      <h2 id="consoleTitle">AI Console</h2>
-      <div id="consoleOutput" class="console-output"></div>
-      <textarea id="consoleInput" placeholder="Type your command to this AI..."></textarea>
-      <button id="sendCommandBtn" class="primary-btn">Send</button>
-    </section>
-  </main>
+      // Optional helper to update AI list dynamically
+      window.updateAIList = function (items) {
+        const list = document.getElementById('aiList');
+        if (!Array.isArray(items) || !list) return;
+        list.innerHTML = '';
+        items.forEach(it => {
+          const row = document.createElement('div');
+          row.className = 'ai-item';
+          row.innerHTML = `<div class="ai-name">${escapeHtml(it.name)}</div><div class="ai-role">${escapeHtml(it.role)}</div>`;
+          list.appendChild(row);
+        });
+      };
 
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-  <script src="config.js"></script>
-  <script src="app.js"></script>
+      function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+    })();
+  </script>
 </body>
 </html>
+
+
+  
