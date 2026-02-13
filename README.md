@@ -1,2 +1,2 @@
 # neweera-platform
-NEWEeRAS AI Assistant Marketplace Platform
+NEW'EeRAS AI Assistant Marketplace Platform
