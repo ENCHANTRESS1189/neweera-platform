@@ -16,9 +16,8 @@
     .btn{background:var(--accent);color:#042027;border:0;padding:10px 14px;border-radius:8px;font-weight:600;cursor:pointer}
     .btn.secondary{background:transparent;color:var(--white);border:1px solid rgba(255,255,255,0.06)}
     .note{font-size:0.85rem;color:var(--muted);margin-top:8px}
-    /* Right column */
     .media{display:flex;flex-direction:column;gap:12px}
-    .video-wrap{position:relative;border-radius:10px;overflow:hidden;background:#000;height:240px;display:flex;align-items:center;justify-content:center}
+    .video-wrap{position:relative;border-radius:10px;overflow:hidden;background:#000;height:260px;display:flex;align-items:center;justify-content:center}
     video{width:100%;height:100%;object-fit:cover;display:block;background:#000}
     .overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
     .play-overlay{pointer-events:auto;background:linear-gradient(90deg,rgba(0,0,0,0.35),rgba(0,0,0,0.15));display:flex;align-items:center;justify-content:center;height:100%;width:100%}
@@ -49,14 +48,12 @@
 
       <aside class="media" aria-label="Demo and AI list">
         <div class="video-wrap" id="videoContainer" aria-hidden="false">
-          <!-- VIDEO: replace the placeholder URL below with your actual hosted video URL.
-               Keep muted and playsinline to satisfy autoplay policies; controls are provided for manual playback. -->
-          <video id="heroVideo" muted playsinline preload="metadata" controls poster="">
-            <!-- Replace YOUR_VIDEO_URL_HERE with the actual URL or relative path to your MP4/WebM file -->
-            <source src="YOUR_VIDEO_URL_HERE" type="video/mp4">
-            <!-- Example alternative source (WebM) -->
-            <!-- <source src="YOUR_VIDEO_URL_HERE.webm" type="video/webm"> -->
-            Your browser does not support HTML5 video. Click Play to open the demo in a new tab.
+          <!-- VIDEO: Update the two <source> src attributes below to point to your actual hosted video files.
+               Recommended: place files in your public assets folder and use relative paths like "assets/intro.mp4" -->
+          <video id="heroVideo" muted playsinline preload="metadata" controls poster="assets/poster.jpg" tabindex="0">
+            <source src="assets/intro.mp4" type="video/mp4">
+            <source src="assets/intro.webm" type="video/webm">
+            Your browser does not support HTML5 video. Click the link below to open the demo file directly.
           </video>
 
           <div class="overlay">
@@ -71,7 +68,6 @@
         </div>
 
         <div class="ai-list" id="aiList" aria-live="polite">
-          <!-- Replace these entries with your actual AI names and subjects in your source files -->
           <div class="ai-item"><div class="ai-name">Ava</div><div class="ai-role">Virtual Receptionist</div></div>
           <div class="ai-item"><div class="ai-name">Sage</div><div class="ai-role">Research Assistant</div></div>
           <div class="ai-item"><div class="ai-name">Atlas</div><div class="ai-role">Data Wrangler</div></div>
@@ -93,7 +89,6 @@
         try {
           video.muted = true;
           video.playsInline = true;
-          // Attempt autoplay; if blocked, user can click controls
           await video.play();
           playBtn.setAttribute('aria-pressed','true');
           overlay.classList.add('hidden');
@@ -116,7 +111,7 @@
 
       video.addEventListener('error', (ev) => {
         console.error('Video element error:', ev);
-        statusNote.textContent = 'Video failed to load. Check the video URL or server configuration.';
+        statusNote.textContent = 'Video failed to load. Check the video file paths and server configuration.';
         const src = video.querySelector('source')?.src || video.src;
         if (src) {
           const link = document.createElement('a');
@@ -137,13 +132,14 @@
       });
 
       window.addEventListener('load', () => {
+        // If sources are missing, show a clear message
         const src = video.querySelector('source')?.src || video.src;
-        if (!src || src.includes('YOUR_VIDEO_URL_HERE')) {
-          statusNote.textContent = 'No video source found. Replace the placeholder src in the <source> tag with your video URL or relative path.';
+        if (!src || src.endsWith('/')) {
+          statusNote.textContent = 'No video source found. Place your video files in the assets folder and update the <source> src attributes.';
         }
       });
 
-      // Optional helper to update AI list dynamically
+      // Helper to update AI list dynamically
       window.updateAIList = function (items) {
         const list = document.getElementById('aiList');
         if (!Array.isArray(items) || !list) return;
@@ -162,5 +158,3 @@
 </body>
 </html>
 
-
-  
